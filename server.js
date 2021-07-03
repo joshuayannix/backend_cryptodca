@@ -55,6 +55,7 @@ db.once('open', () => {
         end: messageDetails.end,
         searchquery: messageDetails.searchquery,        
         timestamp: messageDetails.timestamp,
+        coinimageurl: messageDetails.coinimageurl,
         user: messageDetails.user,
       })
     } else {
@@ -89,7 +90,7 @@ app.get('/messages/sync', (req, res) => {
 // Post a new message to mongo DB
 app.post('/messages/new', (req, res) => {
   const dbMessage = req.body;
-
+  console.log('sending new message from crypto server.js')
   Messages.create(dbMessage, (err, data) => {
     if(err) {
       res.status(500).send(err)
