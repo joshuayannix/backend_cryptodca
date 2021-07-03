@@ -58,16 +58,15 @@ db.once('open', () => {
         coinimageurl: messageDetails.coinimageurl,
         user: messageDetails.user,
       })
+    } else if(change.operationType === 'delete') {
+      // pusher.trigger('messages', 'deleted')
+      console.log('message being deleted')
     } else {
       console.log('Error triggering Pusher')
     }
   });
 
 })
-
-/****************************************************/ 
-
-
 
 /************ API Routes ***************/
 
@@ -89,8 +88,9 @@ app.get('/messages/sync', (req, res) => {
 
 // Post a new message to mongo DB
 app.post('/messages/new', (req, res) => {
-  const dbMessage = req.body;
   console.log('sending new message from crypto server.js')
+  
+  const dbMessage = req.body;
   Messages.create(dbMessage, (err, data) => {
     if(err) {
       res.status(500).send(err)
@@ -101,6 +101,26 @@ app.post('/messages/new', (req, res) => {
 })
 
 
+// Delete a message from mongo DB
+app.delete('/messages/delete/:id', (req, res) => {
+  const id = req.params.id;
+  Messages.findByIdAndRemove(id).exec()
+  res.send('item deleted')
+})
+
+
+// app.delete('/messages/delete/:id', async (req, res) => {
+//   console.log('deleting messages from crypto server.js')
+  
+//   const id = req.params.id;
+//   Messages.findByIdAndRemove(id, (err, data) => {
+//     if(err) {
+//       res.status(500).send(err)
+//     } else {
+//       res.status(201).send(data)
+//     }
+//   })
+// })
 
 
 // listen. This runs when you run nodemon server.js
@@ -116,13 +136,6 @@ app.get('/ping', async (req, res) => {
   res.json(pingResponse)
 });
 
-
-/*****************************************************/
-
-
-
-
-/** Other API routes */
 
 // test ping axios - same result as fetch
 app.get('/pingaxios', async (req, res) => {
